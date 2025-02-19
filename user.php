@@ -1,6 +1,4 @@
 <?php
-
-
 include('databaseConnection.php');
 
 // Handle incoming request
@@ -18,7 +16,7 @@ if (!$endpoint) {
 // API Routing
 switch ($request_method) {
     case 'GET':
-        if ($endpoint === "") {
+        if ($endpoint === "users") {
             if ($id) {
                 getUser($conn, $id);
             }else{
@@ -43,8 +41,7 @@ function getUsers($conn) {
         $users[] = $row;
     }
     
-    echo json_encode(["status" => 200, "result
-    " => $users]);
+    echo json_encode(["status" => 200, "result" => $users]);
 }
 
 function getUser($conn, $id){
@@ -60,7 +57,7 @@ function getUser($conn, $id){
 
     if ($result->num_rows > 0) {
         $user = $result->fetch_assoc();
-        echo json_encode($user);
+        echo json_encode(["status"=> 200, "result" => $user]);
     } else {
         echo json_encode(["error" => "User not found"]);
     }
