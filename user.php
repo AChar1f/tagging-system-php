@@ -5,7 +5,7 @@ include('databaseConnection.php');
 $request_method = $_SERVER["REQUEST_METHOD"];
 $endpoint = $_GET["endpoint"] ?? "";
 $id = $_GET["id"] ?? "";
-$payLoad = $_GET["payload"] ?? "";
+$payLoad = $_GET["payLoad"] ?? "";
 
 // Ensure endpoint is provided
 if (!$endpoint) {
@@ -24,6 +24,14 @@ switch ($request_method) {
             }
         } else {
             echo json_encode(["error" => "Invalid endpoint"]);
+        }
+        break;
+
+    case 'PATCH':
+        if($endpoint === "users") {
+        if ($payLoad) {
+            updateUser($conn, $id, $payLoad);
+        }
         }
         break;
 
@@ -84,23 +92,17 @@ function addUser($conn) {
 
 function updateUser($conn, $id, $payLoad){
     if ($payLoad) {
-       
-        echo json_encode(["message" => $payLoad]);
+       $data = json_decode($payLoad);
     }
-    // $data = json_decode($payLoad, true);
 
-    // if (!isset($data["name"])) {
-    //     echo json_encode(["error" => "Invalid data"]);
-    //     return;
-    // }
+    $name = $data->first_name;
 
-    // $name = $conn->real_escape_string($data["name"]);
-    // $sql = "UPDATE users SET name='$name' WHERE user_id=$id";
+    $sql = "UPDATE Users SET first_name='$name' WHERE user_id=$id";
 
-    // if ($conn->query($sql)) {
-    //     echo json_encode(["message" => "User updated"]);
-    // } else {
-    //     echo json_encode(["error" => "Failed to update user"]);
-    // }
+    if ($conn->query($sql)) {
+        echo json_encode(["message" => "User updated"]);
+    } else {
+        echo json_encode(["error" => "Failed to update user"]);
+    }
 }
 
