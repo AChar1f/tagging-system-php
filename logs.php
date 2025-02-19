@@ -18,13 +18,23 @@ if (!$endpoint) {
 
 // API Routing
 switch ($request_method) {
+    case 'GET':
+        if($endpoint === "logs") {
+            if ($id) {
+                // fetchLog($conn, $id);
+            } else {
+                fetchLogs($conn);
+            }
+        }
+        break;        
+
     case 'POST':
         if ($endpoint === "addLog") {
             if ($id){
                 addLog($conn, $id);
             }
         } else {
-            echo json_encode(["error" => "Invalid endpoint"]);
+            echo json_encode(["error" => "Invalid endpoint 😭"]);
         }
         break;
 
@@ -44,5 +54,23 @@ function addLog($conn, $id){
     }
 }
 
+
+function fetchLogs($conn) {
+    $sql = "SELECT user_id, attendance_id, CONCAT(SUBSTRING(created_at, 1, 10),' ',
+            SUBSTRING(created_at,12, 5))'Time Stamp', first_name, last_name, department 
+            FROM Attendance LEFT JOIN Users using (user_id) 
+            ORDER BY attendance_id DESC";
+
+    $result = $conn->query($sql);
+
+    if($result) {
+        while ($row = $result->fetch_assoc()) {
+            $logs[] = $row;
+        }
+        echo json_encode(["status" => 200, "result" => $logs]);
+    } else {
+        echo json_encode(["error" => "Failed to fetch Logs."]);
+    }
+}
 
 ?>
