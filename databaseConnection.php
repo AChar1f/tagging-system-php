@@ -10,7 +10,7 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 try {
     $conn = new mysqli($servername, $username, $password, $dbname);
-    $conn->set_charset("utf8mb4"); // Ensure proper encoding
+    $conn->set_charset("utf8mb4"); 
 } catch (Exception $e) {
     echo json_encode(["error" => "Database connection failed", "details" => $e->getMessage()]);
     exit;

@@ -16,7 +16,7 @@ if (!$endpoint) {
     exit;
 }
 
-// API Routing
+// Routing
 switch ($request_method) {
     case 'GET':
         if($endpoint === "logs") {
