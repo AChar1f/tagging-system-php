@@ -22,6 +22,10 @@ switch ($request_method) {
             }else{
                 getUsers($conn);
             }
+        } elseif ($endpoint === "monitors") {
+            if ($conn) {
+                fetchAdmin($conn);
+            }
         } else {
             echo json_encode(["error" => "Invalid endpoint"]);
         }
@@ -29,9 +33,9 @@ switch ($request_method) {
 
     case 'PATCH':
         if($endpoint === "users") {
-        if ($payLoad) {
-            updateUser($conn, $id, $payLoad);
-        }
+            if ($payLoad) {
+                updateUser($conn, $id, $payLoad);
+            }
         }
         break;
 
@@ -53,8 +57,6 @@ function getUsers($conn) {
 }
 
 function getUser($conn, $id){
-    // $id = $_GET["id"]?? "";
-
     if (!$id) {
         echo json_encode(["error" => "User ID not provided"]);
         return;
@@ -103,6 +105,20 @@ function updateUser($conn, $id, $payLoad){
         echo json_encode(["message" => "User updated"]);
     } else {
         echo json_encode(["error" => "Failed to update user"]);
+    }
+}
+
+function fetchAdmin($conn){
+    $sql = "SELECT monitor_id, user_id, email_add, user_pass, concat(first_name, ' ', last_name) 'Full Name', department
+        FROM Monitoring LEFT JOIN Users using(user_id)
+        order by user_id desc;";
+    $result = $conn->query($sql);
+
+    if ($result->num_rows > 0) {
+        $admin = $result->fetch_assoc();
+        echo json_encode(["status"=> 200, "result" => $admin]);
+    } else {
+        echo json_encode(["error" => "Admin not found"]);
     }
 }
 
