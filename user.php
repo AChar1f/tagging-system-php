@@ -22,6 +22,7 @@ switch ($request_method) {
             }else{
                 getUsers($conn);
             }
+
         } elseif ($endpoint === "monitors") {
             if ($conn) {
                 fetchAdmin($conn);
