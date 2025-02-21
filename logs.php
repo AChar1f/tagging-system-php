@@ -102,17 +102,21 @@ function fetchLog($conn, $id) {
 };
 
 function userStatus($conn) {
-    $sql = "SELECT distinct CONCAT(first_name, ' ', last_name) 'Full Name', department, user_id , CONCAT(SUBSTRING(created_at,1, 10), ' ' , SUBSTRING(created_at,12, 5))'Latest Log', 
+    $sql = "SELECT u.user_id, CONCAT(u.first_name, ' ', u.last_name) AS 'Full Name', u.department, 
+                DATE_FORMAT(MAX(a.created_at), '%Y-%m-%d %H:%i') AS 'Latest Log',
                 CASE 
-                WHEN COUNT(*) % 2 = 0 THEN 'Off-Site'
-                ELSE 'On-site'
-              END AS status
-          from Attendance left join Users using (user_id) group by user_id 
-          order by attendance_id desc";
+                    WHEN COUNT(a.attendance_id) % 2 = 0 THEN 'Off-Site'
+                    ELSE 'On-site'
+                END AS status
+            FROM Attendance a
+            LEFT JOIN Users u ON a.user_id = u.user_id
+            GROUP BY u.user_id, u.first_name, u.last_name, u.department
+            ORDER BY MAX(a.created_at) DESC";
 
     $result = $conn->query($sql);
 
-    if($result) {
+    if ($result) {
+        $status = [];
         while ($row = $result->fetch_assoc()) {
             $status[] = $row;
         }
@@ -121,4 +125,5 @@ function userStatus($conn) {
         echo json_encode(["error" => "Failed to Fetch Users' Status."]);
     }
 }
+
 ?>

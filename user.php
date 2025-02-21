@@ -22,6 +22,7 @@ switch ($request_method) {
             }else{
                 getUsers($conn);
             }
+        
         } else {
             echo json_encode(["error" => "Invalid endpoint"]);
         }
